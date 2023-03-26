@@ -22,15 +22,15 @@ jobs:
     - name: Log in to registry
       uses: docker/login-action@v1
       with:
-        registry: https://mcr.microsoft.com/
-        username: ${{ secrets.AzureAppService_ContainerUsername_ce0e56eb6e27451bb0567bbb3a41bffb }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_3f7171f4af864029a99b5bcd6cd500ae }}
+        registry: https://index.docker.io/v1/
+        username: ${{ secrets.AzureAppService_ContainerUsername_d7905b767ac24a94bfd32ae99d95ab97 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_653d6f296abe4ac9829cacd9aaf5c8b2 }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_ce0e56eb6e27451bb0567bbb3a41bffb }}/appsvc/staticsite:${{ github.sha }}
+        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_d7905b767ac24a94bfd32ae99d95ab97 }}/chatgpt_bot:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -47,5 +47,5 @@ jobs:
       with:
         app-name: 'telechatbot-webapp'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_370b56e296b64f13898a5a218b667131 }}
-        images: 'mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_ce0e56eb6e27451bb0567bbb3a41bffb }}/appsvc/staticsite:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_7d065f55886a48d287538ac2fbf3d822 }}
+        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_d7905b767ac24a94bfd32ae99d95ab97 }}/chatgpt_bot:${{ github.sha }}'
