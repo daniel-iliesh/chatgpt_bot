@@ -12,7 +12,8 @@ class ChatBot:
     chats = {}
     teleBot = None
     prompts_options = {}
-    base_prompt = "Ты бот для групповых и личных чатов в Telegram. Ты будешь обращаться к участникам чата по их имени И если нужно отмечать их. Ты можешь взаимодействовать со многими участниками чата одновременно. Сообщения будут по такому щаблону {Имя(никнейм): содержимое сообщения}. Лучше  обращаться к участникам по имени но если нужно можно отметить учасников вот так @никнейм. Общайся с участниками ‘на ты’ и можешь их назвать 'братан'."
+    base_prompt = "Ты бот для групповых и личных чатов в Telegram. Ты будешь обращаться к участникам чата по их имени И если нужно отмечать их. Ты можешь взаимодействовать со многими участниками чата одновременно. Сообщения будут по такому щаблону {Firstname(username): Message}. Лучше  обращаться к участникам по имени но если нужно можно отметить учасников вот так @username. Общайся с участниками ‘на ты’ и можешь их назвать 'братан'."
+    default_prompt = "Ты бот для групповых и личных чатов в Telegram. Ты будешь обращаться к участникам чата по их имени И если нужно отмечать их. Ты можешь взаимодействовать со многими участниками чата одновременно. Сообщения будут по такому щаблону {Firstname(username): Message}. Лучше  обращаться к участникам по имени но если нужно можно отметить учасников вот так @никнейм. Общайся с участниками ‘на ты’ и можешь их назвать 'братан'."
     
     def __init__(self, teleBot) -> None:
         self.teleBot = teleBot
@@ -49,6 +50,7 @@ class ChatBot:
             chat_id = message.chat.id
             user = f"{message.from_user.first_name}({message.from_user.username}): "
             text = message.text
+
             mes_obj = {
                 "role": "user",
                 "content": f"{user}: {text}"
@@ -87,12 +89,24 @@ class ChatBot:
         for prompt_name in self.prompts_options.keys():
             if prompt_name == new_mode:
                 self.bot_mode = self.prompts_options[prompt_name]  
+        # self.clear_chat(chat_id)
         self.init_chat(chat_id)
 
-    def init_chat(self, chat_id):
-        self.chats[str(chat_id)] = []
-        self.chats[str(chat_id)].append({"role": "system", "content": f"{self.base_prompt} {self.bot_mode}"})
+    def init_chat(self, chat_id, reset=False):
+
+        if str(chat_id) in self.chats.keys():
+            for index, message in enumerate(self.chats[str(chat_id)]):
+                if message['role'] == 'system':
+                    del self.chats[str(chat_id)][index]
+                    # message['content'] = f"{self.bot_mode}"
+            if reset: 
+                self.bot_mode = self.default_prompt
+            self.chats[str(chat_id)].append({"role": "system", "content": f"{self.bot_mode}"})
+        else: # if Chat does not exist
+            self.chats[str(chat_id)] = []
+            self.chats[str(chat_id)].append({"role": "system", "content": f"{self.default_prompt}"})
         self.dump_chats()
+            
         
     def clear_chat(self, chat_id=None):
         if chat_id == None:
@@ -100,9 +114,7 @@ class ChatBot:
         else:
             if str(chat_id) in self.chats.keys():
                 del self.chats[str(chat_id)]
-
         self.dump_chats()   
 
     def log_dialog(self):
-        for object in self.chats.items():
-            print(f"{object}\n\n")
+        print(f"\n\nChats : {self.chats}\n\n")  

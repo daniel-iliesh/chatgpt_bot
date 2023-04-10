@@ -4,6 +4,7 @@ import os
 import traceback
 import dotenv
 from chat import ChatBot
+import datetime
 
 dotenv.load_dotenv(dotenv.find_dotenv())
 teleBot = TeleBot(os.getenv("BOTFATHER_API_KEY"))
@@ -24,9 +25,10 @@ class Bot:
     def handle_message(self, message):
         teleBot.send_chat_action(message.chat.id, 'typing')
         teleBot.reply_to(message, chatBot.request(message))
-    
+        chatBot.log_dialog()
+        
     def start(self):
-
+            
         while True:
             try:
                 print("Bot Started!")
@@ -42,15 +44,12 @@ class Bot:
                 @teleBot.message_handler(commands=['clear_chat'])
                 def clear_chat(message):
                     chatBot.clear_chat(message.chat.id)
-                    teleBot.reply_to(message, f'Чат отчищен!')
+                    teleBot.reply_to(message, f'Я забыл все о чем мы до этого говорили. Начнем с чистого листа.')
 
                 @teleBot.message_handler(commands=['reset'])
                 def reset(message):
-
-                    teleBot.reply_to(message, f'Чат отчищен!')
-
-                # Handle messages
-                # Handle reffering to the bot by tagging him in groups and in private
+                    chatBot.init_chat(message.chat.id, reset=True)
+                    teleBot.reply_to(message, f'Режим бота сброшен!')
 
                  # Handle the 'mode selection' action
                 @teleBot.message_handler(func=lambda message: message.text in chatBot.prompts_options.keys())
