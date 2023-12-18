@@ -12,7 +12,7 @@ chatBot = ChatBot(teleBot.get_me())
 
 class Bot: 
 
-    def __init__(self) -> None:
+    def __init__(self):
         pass
 
     def create_chat_mode_menu(self):
