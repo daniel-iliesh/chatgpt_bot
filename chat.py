@@ -5,7 +5,8 @@ import dotenv
 import json
 
 dotenv.load_dotenv(dotenv.find_dotenv())
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_base = os.environ("OPENAI_API_BASE")
+openai.api_key = os.environ("OPENAI_API_KEY")
 
 class ChatBot:
     bot_mode = ""
@@ -20,17 +21,17 @@ class ChatBot:
         self.load_chats()
 
     def load_chats(self): 
-        if os.path.exists('chats.json'):
+        if os.path.exists('/tmp/chats.json'):
             # Load the chats from the JSON file
-            with open('chats.json', 'r') as infile:
+            with open('/tmp/chats.json', 'r') as infile:
                 self.chats = json.load(infile)
 
     def dump_chats(self):
         # Save the chats to a JSON file
-        with open('chats.json', 'w') as outfile:
+        with open('/tmp/chats.json', 'w') as outfile:
             json.dump(self.chats, outfile)
 
-    def set_prompts_options(self, filename='prompts_ru.csv'):
+    def set_prompts_options(self, filename='/tmp/prompts_ru.csv'):
         with open(filename, 'r') as file:
             csv_reader = csv.reader(file)
             for row in csv_reader:
