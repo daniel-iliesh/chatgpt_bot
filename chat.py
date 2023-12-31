@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
-from openai import OpenAI
+import openai
 import csv
 import dotenv
 import json
 
 dotenv.load_dotenv(dotenv.find_dotenv())
 
-openai = OpenAI()
+# openai = OpenAI()
 openai.api_base = os.environ["OPENAI_API_BASE"]
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
@@ -80,7 +80,7 @@ class ChatBot:
 
         self.update_context(message)
 
-        response = openai.completions.create(model="gpt-3.5-turbo-16k-0613", messages=self.chats[str(chat_id)])
+        response = openai.ChatCompletion.create(model="gpt-3.5-turbo-16k-0613", messages=self.chats[str(chat_id)])
 
         result = self.postprocess_response(response['choices'][0]['message']['content'])
         self.update_context(result, chat_id)
