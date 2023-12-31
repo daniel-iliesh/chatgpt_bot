@@ -6,10 +6,10 @@ import dotenv
 import json
 
 dotenv.load_dotenv(dotenv.find_dotenv())
-openai.api_base = os.environ["OPENAI_API_BASE"]
-openai.api_key = os.environ["OPENAI_API_KEY"]
 
 openai = OpenAI()
+openai.api_base = os.environ["OPENAI_API_BASE"]
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 class ChatBot:
     bot_mode = ""
