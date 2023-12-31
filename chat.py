@@ -71,7 +71,7 @@ class ChatBot:
         self.dump_chats()
 
     def request(self, message, model="gpt-3.5-turbo-16k-0613"):
-        chat_id = message.chat.id
+        chat_id = message["chat"]["id"]
 
         if str(chat_id) not in self.chats.keys():
             self.init_chat(chat_id)
