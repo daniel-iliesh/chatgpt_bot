@@ -81,5 +81,6 @@ class Bot:
         def listen_chat(message):
             chatBot.update_context(message)
 
-        # Start polling
-        teleBot.polling(none_stop=True)
+    def start_flask_app(self):
+        teleBot.remove_webhook()
+        teleBot.set_webhook(url='https://chadgpt-bot-f2bf5dad4f23.herokuapp.com/' + os.environ["BOTFATHER_API_KEY"])

@@ -3,7 +3,7 @@ import logging
 from bot import Bot
 
 app = Flask(__name__)  # Create your Flask app instance
-bot = Bot(app)  # Pass the Flask app instance to your Bot class
+bot = Bot()  # Pass the Flask app instance to your Bot class
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
