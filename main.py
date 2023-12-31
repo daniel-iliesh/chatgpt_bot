@@ -28,7 +28,7 @@ def webhook_handler():
             app.logger.error(f"Unknown update: {payload}")
 
     except Exception as e:
-        app.logger.error(f"Exception on / [POST]: {e}")
+        app.logger.error(f"Exception on / [POST]: {e}", exc_info=True)
 
     return '', 200
 
