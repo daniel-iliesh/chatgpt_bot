@@ -5,7 +5,6 @@ import traceback
 import dotenv
 from chat import ChatBot
 import datetime
-import threading
 
 dotenv.load_dotenv(dotenv.find_dotenv())
 teleBot = TeleBot(os.environ["BOTFATHER_API_KEY"])
@@ -83,20 +82,6 @@ class Bot:
         def listen_chat(message):
             chatBot.update_context(message)
 
-        @app.route('/', methods=['POST'])
-        def webhook_handler():
-            if request.method == 'POST':
-                update = request.get_json()
-                message = update['message']
-                my_bot.handle_message(message)
-            return 'OK'
-
-        # Start Flask app in a separate thread
-        flask_thread = threading.Thread(target=self.start_flask_app)
-        flask_thread.start()
-
     def start_flask_app(self):
         teleBot.remove_webhook()
         teleBot.set_webhook(url='https://chadgpt-bot-f2bf5dad4f23.herokuapp.com/')
-        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)), threaded=True)
-
