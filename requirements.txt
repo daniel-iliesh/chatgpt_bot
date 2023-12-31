@@ -1,5 +1,5 @@
 python-dotenv
-pyTelegramBotAPI==0.3
+pyTelegramBotAPI==0.4
 openai==0.28
 flask
 gunicorn
