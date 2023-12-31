@@ -49,7 +49,7 @@ class ChatBot:
     def update_context(self, message, chatId=None):
         self.load_chats()
         if chatId == None: 
-            chat_id = message.chat.id
+            chat_id = message["chat"]["id"]
             user = f"{message.from_user.first_name}({message.from_user.username}): "
             text = message.text
 
