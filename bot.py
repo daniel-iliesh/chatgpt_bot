@@ -22,7 +22,7 @@ class Bot:
         return menu
 
     def handle_message(self, message):
-        chat_id = message["chat"]["id"]
+        chat_id = message.chat.id
         teleBot.send_chat_action(chat_id, "typing")
         response = chatBot.request(message)
         teleBot.reply_to(message, response, parse_mode="Markdown")
@@ -35,7 +35,7 @@ class Bot:
         # Handle the callback query here
         # For example, you might want to send a message to the chat
         teleBot.send_message(chat_id, f"You clicked a button! The data was: {data}")
-        chat_id = message["chat"]["id"]
+        chat_id = message.chat.id
         teleBot.send_chat_action(chat_id, "typing")
         response = chatBot.request(message)
         teleBot.reply_to(message, response, parse_mode="Markdown")
@@ -58,7 +58,7 @@ class Bot:
 
         @teleBot.message_handler(commands=["clear_chat"])
         def clear_chat(message):
-            chatBot.clear_chat(message["chat"]["id"])
+            chatBot.clear_chat(message.chat.id)
             teleBot.reply_to(
                 message,
                 f"Я забыл все о чем мы до этого говорили. Начнем с чистого листа.",
@@ -66,16 +66,16 @@ class Bot:
 
         @teleBot.message_handler(commands=["reset"])
         def reset(message):
-            chatBot.init_chat(message["chat"]["id"], reset=True)
+            chatBot.init_chat(message.chat.id, reset=True)
             teleBot.reply_to(message, f"Режим бота сброшен!")
 
         # Handle the 'mode selection' action
         @teleBot.message_handler(
-            func=lambda message: message["text"] in chatBot.prompts_options.keys()
+            func=lambda message: message.text in chatBot.prompts_options.keys()
         )
         def handle_option_selected(message):
-            selected_option = message["text"]
-            chatBot.set_bot_mode(selected_option, message["chat"]["id"])
+            selected_option = message.text
+            chatBot.set_bot_mode(selected_option, message.chat.id)
             reply_markup = ReplyKeyboardRemove()
             teleBot.reply_to(
                 message,
@@ -84,7 +84,7 @@ class Bot:
             )
 
         @teleBot.message_handler(
-            func=lambda message: "@" + teleBot.get_me().username in message["text"],
+            func=lambda message: "@" + teleBot.get_me().username in message.text,
             chat_types=["group", "supergroup", "private"],
         )
         def sender(message):
