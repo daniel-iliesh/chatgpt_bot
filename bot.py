@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+from flask import Flask, request
 from telebot import TeleBot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 import os
@@ -6,13 +6,15 @@ import traceback
 import dotenv
 from chat import ChatBot
 import datetime
+import threading
 
+app = Flask(__name__)
 dotenv.load_dotenv(dotenv.find_dotenv())
 teleBot = TeleBot(os.environ["BOTFATHER_API_KEY"])
 chatBot = ChatBot(teleBot.get_me())
 
-class Bot: 
 
+class Bot:
     def __init__(self):
         pass
 
@@ -22,61 +24,82 @@ class Bot:
         menu = ReplyKeyboardMarkup(row_width=2)
         menu.add(*buttons)
         return menu
-    
+
     def handle_message(self, message):
-        teleBot.send_chat_action(message.chat.id, 'typing')
+        teleBot.send_chat_action(message.chat.id, "typing")
         teleBot.reply_to(message, chatBot.request(message))
         chatBot.log_dialog()
-        
+
+
     def start(self):
-            
-        while True:
-            try:
-                print("Bot Started!")
-                # Handle commands
-                @teleBot.message_handler(commands=['start'])
-                def start_message(message):
-                    teleBot.reply_to(message, "Здравствуйте букашки!")
+        print("Bot Started!")
 
-                @teleBot.message_handler(commands=['bot_mode'])
-                def choosemode(message):
-                    teleBot.reply_to(message, 'Выберите режим бота: ', reply_markup=self.create_chat_mode_menu())
+        # Handle commands
+        @teleBot.message_handler(commands=["start"])
+        def start_message(message):
+            teleBot.reply_to(message, "Здравствуйте букашки!")
 
-                @teleBot.message_handler(commands=['clear_chat'])
-                def clear_chat(message):
-                    chatBot.clear_chat(message.chat.id)
-                    teleBot.reply_to(message, f'Я забыл все о чем мы до этого говорили. Начнем с чистого листа.')
+        @teleBot.message_handler(commands=["bot_mode"])
+        def choosemode(message):
+            teleBot.reply_to(
+                message, "Выберите режим бота: ", reply_markup=self.create_chat_mode_menu()
+            )
 
-                @teleBot.message_handler(commands=['reset'])
-                def reset(message):
-                    chatBot.init_chat(message.chat.id, reset=True)
-                    teleBot.reply_to(message, f'Режим бота сброшен!')
+        @teleBot.message_handler(commands=["clear_chat"])
+        def clear_chat(message):
+            chatBot.clear_chat(message.chat.id)
+            teleBot.reply_to(
+                message, f"Я забыл все о чем мы до этого говорили. Начнем с чистого листа."
+            )
 
-                 # Handle the 'mode selection' action
-                @teleBot.message_handler(func=lambda message: message.text in chatBot.prompts_options.keys())
-                def handle_option_selected(message):
-                    selected_option = message.text
-                    chatBot.set_bot_mode(selected_option, message.chat.id)
-                    reply_markup = ReplyKeyboardRemove()
-                    teleBot.reply_to(message, text=f'Все, я теперь {selected_option}.', reply_markup=reply_markup)
-                    
-                @teleBot.message_handler(func=lambda message: '@' + teleBot.get_me().username in message.text, chat_types=['group', 'supergroup', 'private'])
-                def sender(message):
-                    # print("Handle tagged bot\n")
-                    self.handle_message(message)
+        @teleBot.message_handler(commands=["reset"])
+        def reset(message):
+            chatBot.init_chat(message.chat.id, reset=True)
+            teleBot.reply_to(message, f"Режим бота сброшен!")
 
-                # Handle all messages in private chats
-                @teleBot.message_handler(func=lambda message: True, chat_types=['private'])
-                def private_sender(message):
-                    self.handle_message(message)
+        # Handle the 'mode selection' action
+        @teleBot.message_handler(
+            func=lambda message: message.text in chatBot.prompts_options.keys()
+        )
+        def handle_option_selected(message):
+            selected_option = message.text
+            chatBot.set_bot_mode(selected_option, message.chat.id)
+            reply_markup = ReplyKeyboardRemove()
+            teleBot.reply_to(
+                message, text=f"Все, я теперь {selected_option}.", reply_markup=reply_markup
+            )
 
-                # Listen all messages to add them in the chat memory for context
-                @teleBot.message_handler(func=lambda message: True)
-                def listen_chat(message):
-                    chatBot.update_context(message)
+        @teleBot.message_handler(
+            func=lambda message: "@" + teleBot.get_me().username in message.text,
+            chat_types=["group", "supergroup", "private"],
+        )
+        def sender(message):
+            self.handle_message(message)
 
-                teleBot.polling()
+        # Handle all messages in private chats
+        @teleBot.message_handler(func=lambda message: True, chat_types=["private"])
+        def private_sender(message):
+            self.handle_message(message)
 
-            except Exception as e:
-                teleBot.stop_polling()
-                traceback.print_exc()
+        # Listen all messages to add them in the chat memory for context
+        @teleBot.message_handler(func=lambda message: True)
+        def listen_chat(message):
+            chatBot.update_context(message)
+
+        @app.route('/', methods=['POST'])
+        def webhook_handler():
+            if request.method == 'POST':
+                update = request.get_json()
+                message = update['message']
+                my_bot.handle_message(message)
+            return 'OK'
+
+        # Start Flask app in a separate thread
+        flask_thread = threading.Thread(target=self.start_flask_app)
+        flask_thread.start()
+
+    def start_flask_app(self):
+        teleBot.remove_webhook()
+        teleBot.set_webhook(url='https://chadgpt-bot-f2bf5dad4f23.herokuapp.com/')
+        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)), threaded=True)
+
