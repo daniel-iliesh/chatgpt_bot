@@ -2,7 +2,7 @@ from flask import Flask, request
 from bot import Bot
 
 app = Flask(__name__)  # Create your Flask app instance
-bot = Bot(app)  # Pass the Flask app instance to your Bot class
+bot = Bot()  # Create an instance of your Bot class
 
 @app.route('/', methods=['POST'])
 def webhook_handler():
@@ -13,4 +13,4 @@ def webhook_handler():
     return 'OK'
 
 if __name__ == "__main__":
-    bot.start()
+    bot.start() 

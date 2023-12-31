@@ -11,8 +11,8 @@ teleBot = TeleBot(os.environ["BOTFATHER_API_KEY"])
 chatBot = ChatBot(teleBot.get_me())
 
 class Bot:
-    def __init__(self, app):
-        self.app = app
+    def __init__(self):
+        pass
 
     def create_chat_mode_menu(self):
         chatBot.set_prompts_options()
@@ -25,7 +25,6 @@ class Bot:
         teleBot.send_chat_action(message.chat.id, "typing")
         teleBot.reply_to(message, chatBot.request(message))
         chatBot.log_dialog()
-
 
     def start(self):
         print("Bot Started!")
@@ -82,6 +81,5 @@ class Bot:
         def listen_chat(message):
             chatBot.update_context(message)
 
-    def start_flask_app(self):
-        teleBot.remove_webhook()
-        teleBot.set_webhook(url='https://chadgpt-bot-f2bf5dad4f23.herokuapp.com/')
+        # Start polling
+        teleBot.polling(none_stop=True)
