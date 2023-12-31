@@ -6,8 +6,8 @@ import dotenv
 import json
 
 dotenv.load_dotenv(dotenv.find_dotenv())
-openai.api_base = os.environ("OPENAI_API_BASE")
-openai.api_key = os.environ("OPENAI_API_KEY")
+openai.api_base = os.environ["OPENAI_API_BASE"]
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 class ChatBot:
     bot_mode = ""
@@ -70,7 +70,7 @@ class ChatBot:
             self.chats[str(chatId)].append(mes_obj)
         self.dump_chats()
 
-    def request(self, message, model="gpt-3.5-turbo"):
+    def request(self, message, model="gpt-3.5-turbo-16k-0613"):
         chat_id = message.chat.id
 
         if str(chat_id) not in self.chats.keys():

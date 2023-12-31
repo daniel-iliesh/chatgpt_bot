@@ -8,7 +8,7 @@ from chat import ChatBot
 import datetime
 
 dotenv.load_dotenv(dotenv.find_dotenv())
-teleBot = TeleBot(os.environ("BOTFATHER_API_KEY"))
+teleBot = TeleBot(os.environ["BOTFATHER_API_KEY"])
 chatBot = ChatBot(teleBot.get_me())
 
 class Bot: 
