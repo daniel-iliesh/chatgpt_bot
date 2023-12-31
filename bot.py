@@ -22,7 +22,8 @@ class Bot:
         return menu
 
     def handle_message(self, message):
-        teleBot.send_chat_action(message['message']['chat']['id'], 'typing')
+        chat_id = message['chat']['id']
+        teleBot.send_chat_action(chat_id, 'typing')
         response = chatBot.request(message)
         teleBot.reply_to(message, response)
 
