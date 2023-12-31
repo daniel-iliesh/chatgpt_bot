@@ -22,9 +22,9 @@ class Bot:
         return menu
 
     def handle_message(self, message):
-        teleBot.send_chat_action(message.chat.id, "typing")
-        teleBot.reply_to(message, chatBot.request(message))
-        chatBot.log_dialog()
+        teleBot.send_chat_action(message.chat.id, 'typing')
+        response = chatBot.request(message)
+        teleBot.reply_to(message, response)
 
     def start(self):
         print("Bot Started!")
