@@ -49,9 +49,9 @@ class ChatBot:
     def update_context(self, message, chatId=None):
         self.load_chats()
         if chatId == None: 
-            chat_id = message.chat.id
-            user = f"{message.from_user.first_name}({message.from_user.username}): "
-            text = message.text
+            chat_id = message['chat']['id']
+            user = f"{message['from_user']['first_name']}({message['from_user']['username']}): "
+            text = message['text']
 
             mes_obj = {
                 "role": "user",
@@ -71,7 +71,7 @@ class ChatBot:
         self.dump_chats()
 
     def request(self, message, model="gpt-3.5-turbo-16k-0613"):
-        chat_id = message.chat.id
+        chat_id = message['chat']['id']
 
         if str(chat_id) not in self.chats.keys():
             self.init_chat(chat_id)
@@ -98,7 +98,7 @@ class ChatBot:
 
         if str(chat_id) in self.chats.keys():
             for index, message in enumerate(self.chats[str(chat_id)]):
-                if message.role == 'system':
+                if message['role'] == 'system':
                     del self.chats[str(chat_id)][index]
                     # message['content'] = f"{self.bot_mode}"
             if reset: 
