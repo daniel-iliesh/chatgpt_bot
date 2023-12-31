@@ -83,6 +83,5 @@ class Bot:
             chatBot.update_context(message)
 
     def start_flask_app(self):
-        teleBot.polling(none_stop=True)
-        # teleBot.remove_webhook()
-        # teleBot.set_webhook(url='https://chadgpt-bot-f2bf5dad4f23.herokuapp.com/')
+        teleBot.remove_webhook()
+        teleBot.set_webhook(url='https://chadgpt-bot-f2bf5dad4f23.herokuapp.com/')
