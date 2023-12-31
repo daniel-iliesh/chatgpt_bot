@@ -25,7 +25,7 @@ class Bot:
         chat_id = message['chat']['id']
         teleBot.send_chat_action(chat_id, 'typing')
         response = chatBot.request(message)
-        teleBot.reply_to(message, response)
+        teleBot.reply_to(message, response, parse_mode='Markdown')
 
     def start(self):
         print("Bot Started!")
