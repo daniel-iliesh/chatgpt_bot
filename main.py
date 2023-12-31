@@ -10,21 +10,27 @@ logging.basicConfig(level=logging.DEBUG)
 
 @app.route('/', methods=['POST'])
 def webhook_handler():
-    if request.method == 'POST':
-        update = request.get_json()
-
-        # Log the received update for debugging
-        logging.debug(f"Received update: {update}")
-
-        if 'message' in update:
-            message = update['message']
-
-            # Log the received message for debugging
-            logging.debug(f"Received message: {message}")
-
+    try:
+        payload = request.get_json()
+        app.logger.debug(f"Received update: {payload}")
+        
+        if 'message' in payload:
+            # This is a message update
+            message = payload['message']
+            app.logger.debug(f"Received message: {message}")
             bot.handle_message(message)
-    
-    return 'OK'
+        elif 'callback_query' in payload:
+            # This is a callback query update
+            callback_query = payload['callback_query']
+            # Replace the line below with your callback query handler
+            app.logger.debug(f"Received callback query: {callback_query}")
+        else:
+            app.logger.error(f"Unknown update: {payload}")
+
+    except Exception as e:
+        app.logger.error(f"Exception on / [POST]: {e}")
+
+    return '', 200
 
 if __name__ == "__main__":
     bot.start()
