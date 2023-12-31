@@ -1,5 +1,5 @@
 python-dotenv
 telebot
-openai
+openai=0.27.0
 flask
 gunicorn
