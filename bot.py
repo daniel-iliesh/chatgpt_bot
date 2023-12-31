@@ -1,4 +1,3 @@
-from flask import Flask, request
 from telebot import TeleBot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 import os
@@ -8,15 +7,13 @@ from chat import ChatBot
 import datetime
 import threading
 
-app = Flask(__name__)
 dotenv.load_dotenv(dotenv.find_dotenv())
 teleBot = TeleBot(os.environ["BOTFATHER_API_KEY"])
 chatBot = ChatBot(teleBot.get_me())
 
-
 class Bot:
-    def __init__(self):
-        pass
+    def __init__(self, app):
+        self.app = app
 
     def create_chat_mode_menu(self):
         chatBot.set_prompts_options()
