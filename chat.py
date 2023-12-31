@@ -50,8 +50,8 @@ class ChatBot:
         self.load_chats()
         if chatId == None: 
             chat_id = message["chat"]["id"]
-            user = f"{message.from_user.first_name}({message.from_user.username}): "
-            text = message.text
+            user = f"{message['from_user']['first_name']}({message['from_user']['username']}): "
+            text = message["text"]
 
             mes_obj = {
                 "role": "user",
