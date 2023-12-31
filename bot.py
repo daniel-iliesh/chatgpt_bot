@@ -10,6 +10,7 @@ dotenv.load_dotenv(dotenv.find_dotenv())
 teleBot = TeleBot(os.environ["BOTFATHER_API_KEY"])
 chatBot = ChatBot(teleBot.get_me())
 
+
 class Bot:
     def __init__(self):
         pass
@@ -22,10 +23,23 @@ class Bot:
         return menu
 
     def handle_message(self, message):
-        chat_id = message['chat']['id']
-        teleBot.send_chat_action(chat_id, 'typing')
+        chat_id = message["chat"]["id"]
+        teleBot.send_chat_action(chat_id, "typing")
         response = chatBot.request(message)
-        teleBot.reply_to(message, response, parse_mode='Markdown')
+        teleBot.reply_to(message, response, parse_mode="Markdown")
+
+    def handle_callback_query(self, callback_query):
+        # Extract the necessary information from the callback_query
+        chat_id = callback_query["message"]["chat"]["id"]
+        data = callback_query["data"]
+
+        # Handle the callback query here
+        # For example, you might want to send a message to the chat
+        teleBot.send_message(chat_id, f"You clicked a button! The data was: {data}")
+        chat_id = message["chat"]["id"]
+        teleBot.send_chat_action(chat_id, "typing")
+        response = chatBot.request(message)
+        teleBot.reply_to(message, response, parse_mode="Markdown")
 
     def start(self):
         print("Bot Started!")
@@ -38,14 +52,17 @@ class Bot:
         @teleBot.message_handler(commands=["bot_mode"])
         def choosemode(message):
             teleBot.reply_to(
-                message, "Выберите режим бота: ", reply_markup=self.create_chat_mode_menu()
+                message,
+                "Выберите режим бота: ",
+                reply_markup=self.create_chat_mode_menu(),
             )
 
         @teleBot.message_handler(commands=["clear_chat"])
         def clear_chat(message):
             chatBot.clear_chat(message.chat.id)
             teleBot.reply_to(
-                message, f"Я забыл все о чем мы до этого говорили. Начнем с чистого листа."
+                message,
+                f"Я забыл все о чем мы до этого говорили. Начнем с чистого листа.",
             )
 
         @teleBot.message_handler(commands=["reset"])
@@ -62,7 +79,9 @@ class Bot:
             chatBot.set_bot_mode(selected_option, message.chat.id)
             reply_markup = ReplyKeyboardRemove()
             teleBot.reply_to(
-                message, text=f"Все, я теперь {selected_option}.", reply_markup=reply_markup
+                message,
+                text=f"Все, я теперь {selected_option}.",
+                reply_markup=reply_markup,
             )
 
         @teleBot.message_handler(
@@ -84,4 +103,7 @@ class Bot:
 
     def start_flask_app(self):
         teleBot.remove_webhook()
-        teleBot.set_webhook(url='https://chadgpt-bot-f2bf5dad4f23.herokuapp.com/' + os.environ["BOTFATHER_API_KEY"])
+        teleBot.set_webhook(
+            url="https://chadgpt-bot-f2bf5dad4f23.herokuapp.com/"
+            + os.environ["BOTFATHER_API_KEY"]
+        )
