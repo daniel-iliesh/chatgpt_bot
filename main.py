@@ -13,7 +13,7 @@ def check_webhook():
     response = requests.get(f"https://api.telegram.org/bot{os.environ['BOTFATHER_API_KEY']}/getWebhookInfo")
     data = response.json()
     if 'last_error_message' in data['result']:
-        print(f"Webhook Error: {data['result']['last_error_message']}")
+        app.logger.debug(f"Webhook Error: {data['result']['last_error_message']}")
         return False
     return True
 
