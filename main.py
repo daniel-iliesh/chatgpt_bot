@@ -1,12 +1,21 @@
+import os
+import requests
 from flask import Flask, request
 import logging
 from bot import Bot
 
 app = Flask(__name__)  # Create your Flask app instance
 bot = Bot()  # Pass the Flask app instance to your Bot class
-
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
+
+def check_webhook():
+    response = requests.get(f"https://api.telegram.org/bot{os.environ['BOTFATHER_API_KEY']}/getWebhookInfo")
+    data = response.json()
+    if 'last_error_message' in data['result']:
+        print(f"Webhook Error: {data['result']['last_error_message']}")
+        return False
+    return True
 
 @app.route('/', methods=['POST'])
 def webhook_handler():
@@ -34,4 +43,5 @@ def webhook_handler():
 
 
 if __name__ == "__main__":
-    bot.start()
+    if (check_webhook()):
+        bot.start()
