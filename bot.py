@@ -24,7 +24,7 @@ class Bot:
 
     def handle_message(self, message_dict):
         # Convert dictionary to Message object
-        self.message = types.Message.de_json(message_dict, teleBot)
+        self.message = types.Message.de_json(message_dict)
 
         # Now you can use the Message object with teleBot
         chat_id = self.message.chat.id
