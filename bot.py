@@ -29,8 +29,8 @@ class Bot:
         # Now you can use the Message object with teleBot
         chat_id = self.message.chat.id
         teleBot.send_chat_action(chat_id, "typing")
-        response = chatBot.request(message)
-        teleBot.reply_to(message, response, parse_mode="Markdown")
+        response = chatBot.request(self.message)
+        teleBot.reply_to(self.message, response, parse_mode="Markdown")
 
     def handle_callback_query(self, callback_query):
         # Extract the necessary information from the callback_query
@@ -42,8 +42,8 @@ class Bot:
         teleBot.send_message(chat_id, f"You clicked a button! The data was: {data}")
         chat_id = self.message.chat.id
         teleBot.send_chat_action(chat_id, "typing")
-        response = chatBot.request(message)
-        teleBot.reply_to(message, response, parse_mode="Markdown")
+        response = chatBot.request(self.message)
+        teleBot.reply_to(self.message, response, parse_mode="Markdown")
 
     def start(self):
         print("Bot Started!")
