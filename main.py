@@ -6,7 +6,6 @@ from bot import Bot
 
 app = Flask(__name__)  # Create your Flask app instance
 bot = Bot()  # Pass the Flask app instance to your Bot class
-
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -32,7 +31,6 @@ def webhook_handler():
         elif 'callback_query' in payload:
             # This is a callback query update
             callback_query = payload['callback_query']
-            app.logger.debug(f"Received callback query: {callback_query}")
             bot.handle_callback_query(callback_query)
         # Add more elif clauses here for other update types
         else:
@@ -43,9 +41,7 @@ def webhook_handler():
 
     return '', 200
 
+
 if __name__ == "__main__":
     if (check_webhook()):
-        app.logger.debug("Webhook checked successfully. Starting the bot.")
         bot.start()
-    else:
-        app.logger.error("Webhook check failed. Bot not started.")
