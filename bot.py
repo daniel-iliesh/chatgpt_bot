@@ -1,5 +1,6 @@
 from telebot import TeleBot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telebot import types
 import os
 import traceback
 import dotenv
@@ -21,8 +22,12 @@ class Bot:
         menu.add(*buttons)
         return menu
 
-    def handle_message(self, message):
-        chat_id = message['chat']['id']
+    def handle_message(self, message_dict):
+        # Convert dictionary to Message object
+        self.message = types.Message.de_json(message_dict, teleBot)
+
+        # Now you can use the Message object with teleBot
+        chat_id = self.message.chat.id
         teleBot.send_chat_action(chat_id, "typing")
         response = chatBot.request(message)
         teleBot.reply_to(message, response, parse_mode="Markdown")
@@ -35,7 +40,7 @@ class Bot:
         # Handle the callback query here
         # For example, you might want to send a message to the chat
         teleBot.send_message(chat_id, f"You clicked a button! The data was: {data}")
-        chat_id = message['chat']['id']
+        chat_id = self.message.chat.id
         teleBot.send_chat_action(chat_id, "typing")
         response = chatBot.request(message)
         teleBot.reply_to(message, response, parse_mode="Markdown")
@@ -58,7 +63,7 @@ class Bot:
 
         @teleBot.message_handler(commands=["clear_chat"])
         def clear_chat(message):
-            chatBot.clear_chat(message['chat']['id'])
+            chatBot.clear_chat(self.message.chat.id)
             teleBot.reply_to(
                 message,
                 f"Я забыл все о чем мы до этого говорили. Начнем с чистого листа.",
@@ -66,7 +71,7 @@ class Bot:
 
         @teleBot.message_handler(commands=["reset"])
         def reset(message):
-            chatBot.init_chat(message['chat']['id'], reset=True)
+            chatBot.init_chat(self.message.chat.id, reset=True)
             teleBot.reply_to(message, f"Режим бота сброшен!")
 
         # Handle the 'mode selection' action
@@ -75,7 +80,7 @@ class Bot:
         )
         def handle_option_selected(message):
             selected_option = message['text']
-            chatBot.set_bot_mode(selected_option, message['chat']['id'])
+            chatBot.set_bot_mode(selected_option, self.message.chat.id)
             reply_markup = ReplyKeyboardRemove()
             teleBot.reply_to(
                 message,
