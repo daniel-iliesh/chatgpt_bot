@@ -18,6 +18,7 @@ def check_webhook():
     return True
 
 @app.route(f"/{os.environ['BOTFATHER_API_KEY']}", methods=['POST'])
+@app.route(f"/", methods=['POST'])
 def webhook_handler():
     try:
         payload = request.get_json()
