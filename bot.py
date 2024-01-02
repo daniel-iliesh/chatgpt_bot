@@ -8,16 +8,16 @@ from chat import ChatBot
 import datetime
 
 dotenv.load_dotenv(dotenv.find_dotenv())
-chatBot = ChatBot(teleBot.get_me())
 
 class Bot:
-    def __init__(self, teleBot):
+    def __init__(self, teleBot, chatBot):
         self.teleBot = teleBot
         self.me = teleBot.get_me()
+        self.chatBot = chatBot
 
     def create_chat_mode_menu(self):
-        chatBot.set_prompts_options()
-        buttons = [KeyboardButton(option) for option in chatBot.prompts_options.keys()]
+        self.chatBot.set_prompts_options()
+        buttons = [KeyboardButton(option) for option in self.chatBot.prompts_options.keys()]
         menu = ReplyKeyboardMarkup(row_width=2)
         menu.add(*buttons)
         return menu
@@ -26,7 +26,7 @@ class Bot:
         # Now you can use the Message object with teleBot
         chat_id = message.chat.id
         self.teleBot.send_chat_action(chat_id, "typing")
-        response = chatBot.request(message)
+        response = self.chatBot.request(message)
 
         self.teleBot.reply_to(message, response, parse_mode="Markdown")
 
@@ -39,7 +39,7 @@ class Bot:
         # For example, you might want to send a message to the chat
         self.teleBot.send_message(chat_id, f"You clicked a button! The data was: {data}")
         self.teleBot.send_chat_action(chat_id, "typing")
-        response = chatBot.request(callback_query["message"])
+        response = self.chatBot.request(callback_query["message"])
         self.teleBot.reply_to(callback_query["message"], response, parse_mode="Markdown")
 
     def start(self):
@@ -60,7 +60,7 @@ class Bot:
 
         @self.teleBot.message_handler(commands=["clear_chat"])
         def clear_chat(message):
-            chatBot.clear_chat(message.chat.id)
+            self.chatBot.clear_chat(message.chat.id)
             self.teleBot.reply_to(
                 message,
                 f"Я забыл все о чем мы до этого говорили. Начнем с чистого листа.",
@@ -68,7 +68,7 @@ class Bot:
 
         @self.teleBot.message_handler(commands=["reset"])
         def reset(message):
-            chatBot.init_chat(message.chat.id, reset=True)
+            self.chatBot.init_chat(message.chat.id, reset=True)
             self.teleBot.reply_to(message, f"Режим бота сброшен!")
         
         @self.teleBot.message_handler(commands=["active_mode"])
@@ -82,11 +82,11 @@ class Bot:
 
         # Handle the 'mode selection' action
         @self.teleBot.message_handler(
-            func=lambda message: message.text in chatBot.prompts_options.keys()
+            func=lambda message: message.text in self.chatBot.prompts_options.keys()
         )
         def handle_option_selected(message):
             selected_option = message.text
-            chatBot.set_bot_mode(selected_option, message.chat.id)
+            self.chatBot.set_bot_mode(selected_option, message.chat.id)
             reply_markup = ReplyKeyboardRemove()
             self.teleBot.reply_to(
                 message,
@@ -101,4 +101,4 @@ class Bot:
             self.handle_message(message)
 
         def listen_chat(self, message):
-            chatBot.update_context(message)
+            self.chatBot.update_context(message)

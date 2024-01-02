@@ -7,7 +7,8 @@ from telebot import TeleBot
 
 app = Flask(__name__)  # Create your Flask app instance
 teleBot = TeleBot(os.environ["BOTFATHER_API_KEY"])
-bot = Bot(teleBot)  
+chatBot = ChatBot(teleBot.get_me())
+bot = Bot(teleBot, chatBot)  
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
