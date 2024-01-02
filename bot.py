@@ -22,16 +22,13 @@ class Bot:
         menu.add(*buttons)
         return menu
 
-    def handle_message(self, message_dict):
-        # Convert dictionary to Message object
-        self.message = types.Message.de_json(message_dict)
-
+    def handle_message(self, message):
         # Now you can use the Message object with teleBot
-        chat_id = self.message.chat.id
+        chat_id = message.chat.id
         teleBot.send_chat_action(chat_id, "typing")
-        response = chatBot.request(self.message)
+        response = chatBot.request(message)
 
-        teleBot.reply_to(self.message, response, parse_mode="Markdown")
+        teleBot.reply_to(message, response, parse_mode="Markdown")
 
     def handle_callback_query(self, callback_query):
         # Extract the necessary information from the callback_query
@@ -41,10 +38,9 @@ class Bot:
         # Handle the callback query here
         # For example, you might want to send a message to the chat
         teleBot.send_message(chat_id, f"You clicked a button! The data was: {data}")
-        chat_id = self.message.chat.id
         teleBot.send_chat_action(chat_id, "typing")
-        response = chatBot.request(self.message)
-        teleBot.reply_to(self.message, response, parse_mode="Markdown")
+        response = chatBot.request(callback_query["message"])
+        teleBot.reply_to(callback_query["message"], response, parse_mode="Markdown")
 
     def start(self):
         print("Bot Started!")
@@ -64,7 +60,7 @@ class Bot:
 
         @teleBot.message_handler(commands=["clear_chat"])
         def clear_chat(message):
-            chatBot.clear_chat(self.message.chat.id)
+            chatBot.clear_chat(message.chat.id)
             teleBot.reply_to(
                 message,
                 f"Я забыл все о чем мы до этого говорили. Начнем с чистого листа.",
@@ -72,7 +68,7 @@ class Bot:
 
         @teleBot.message_handler(commands=["reset"])
         def reset(message):
-            chatBot.init_chat(self.message.chat.id, reset=True)
+            chatBot.init_chat(message.chat.id, reset=True)
             teleBot.reply_to(message, f"Режим бота сброшен!")
         
         @teleBot.message_handler(commands=["active_mode"])
@@ -86,11 +82,11 @@ class Bot:
 
         # Handle the 'mode selection' action
         @teleBot.message_handler(
-            func=lambda message: message['text'] in chatBot.prompts_options.keys()
+            func=lambda message: message.text in chatBot.prompts_options.keys()
         )
         def handle_option_selected(message):
-            selected_option = message['text']
-            chatBot.set_bot_mode(selected_option, self.message.chat.id)
+            selected_option = message.text
+            chatBot.set_bot_mode(selected_option, message.chat.id)
             reply_markup = ReplyKeyboardRemove()
             teleBot.reply_to(
                 message,
@@ -98,26 +94,11 @@ class Bot:
                 reply_markup=reply_markup,
             )
 
-        @teleBot.message_handler(
-            func=lambda message: "@" + teleBot.get_me().username in message['text'],
-            chat_types=["group", "supergroup", "private"],
-        )
-        def sender(message):
+        def sender(self, message):
+                self.handle_message(message)
+
+        def private_sender(self, message):
             self.handle_message(message)
 
-        # Handle all messages in private chats
-        @teleBot.message_handler(func=lambda message: True, chat_types=["private"])
-        def private_sender(message):
-            self.handle_message(message)
-
-        # Listen all messages to add them in the chat memory for context
-        @teleBot.message_handler(func=lambda message: True)
-        def listen_chat(message):
+        def listen_chat(self, message):
             chatBot.update_context(message)
-
-    def start_flask_app(self):
-        teleBot.remove_webhook()
-        teleBot.set_webhook(
-            url="https://chadgpt-bot-f2bf5dad4f23.herokuapp.com/"
-            + os.environ["BOTFATHER_API_KEY"]
-        )
