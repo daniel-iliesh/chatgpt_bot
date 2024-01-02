@@ -81,7 +81,7 @@ class ChatBot:
         self.update_context(message)
 
         response = openai.ChatCompletion.create(
-            model, messages=self.chats[str(chat_id)]
+            model=model, messages=self.chats[str(chat_id)]
         )
 
         result = self.postprocess_response(response["choices"][0]["message"]["content"])
