@@ -93,11 +93,11 @@ class Bot:
                 reply_markup=reply_markup,
             )
 
-        def sender(self, message):
-                self.handle_message(message)
-
-        def private_sender(self, message):
+    def sender(self, message):
             self.handle_message(message)
 
-        def listen_chat(self, message):
-            self.chatBot.update_context(message)
+    def private_sender(self, message):
+        self.handle_message(message)
+
+    def listen_chat(self, message):
+        self.chatBot.update_context(message)
