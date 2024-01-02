@@ -4,6 +4,7 @@ from flask import Flask, request
 import logging
 from bot import Bot
 from telebot import TeleBot
+from chat import ChatBot
 
 app = Flask(__name__)  # Create your Flask app instance
 teleBot = TeleBot(os.environ["BOTFATHER_API_KEY"])

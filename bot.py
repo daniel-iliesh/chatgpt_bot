@@ -4,7 +4,6 @@ from telebot import types
 import os
 import traceback
 import dotenv
-from chat import ChatBot
 import datetime
 
 dotenv.load_dotenv(dotenv.find_dotenv())
