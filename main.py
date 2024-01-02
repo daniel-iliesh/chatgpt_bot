@@ -29,7 +29,7 @@ def webhook_handler():
         message = payload.get("message")
         if message:
             chat_type = message["chat"]["type"]
-            if "@" + teleBot.get_me().username in message["text"] and chat_type in [
+            if "@" + bot.get_me().username in message["text"] and chat_type in [
                 "group",
                 "supergroup",
                 "private",
