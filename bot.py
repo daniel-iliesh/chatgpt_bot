@@ -21,9 +21,9 @@ class Bot:
         menu.add(*buttons)
         return menu
 
-    def handle_message(self, message):
+    def handle_message(self, message_dist):
         # Now you can use the Message object with teleBot
-        chat_id = message.chat.id
+        chat_id = self.message.chat.id
         self.teleBot.send_chat_action(chat_id, "typing")
         response = self.chatBot.request(message)
 

@@ -24,16 +24,18 @@ def check_webhook():
         return False
     return True
 
-
 @app.route(f"/{os.environ['BOTFATHER_API_KEY']}", methods=["POST"])
 @app.route(f"/", methods=["POST"])
 def webhook_handler():
     try:
         payload = request.get_json()
-        message = payload.get("message")
-        if message:
-            chat_type = message["chat"]["type"]
-            if "@" + teleBot.get_me().username in message["text"] and chat_type in [
+        message_dict = payload.get("message")
+        if message_dict:
+            # Convert dictionary to Message object
+            message = types.Message.de_json(message_dict)
+
+            chat_type = message.chat.type
+            if "@" + teleBot.get_me().username in message.text and chat_type in [
                 "group",
                 "supergroup",
                 "private",
@@ -46,7 +48,6 @@ def webhook_handler():
         app.logger.error(f"Exception on / [POST]: {e}", exc_info=True)
 
     return "", 200
-
 
 if __name__ == "__main__":
     if check_webhook():
