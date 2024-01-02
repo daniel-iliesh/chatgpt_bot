@@ -13,7 +13,7 @@ chatBot = ChatBot(teleBot.get_me())
 
 class Bot:
     def __init__(self):
-        pass
+        self.active_mode = False
 
     def create_chat_mode_menu(self):
         chatBot.set_prompts_options()
@@ -30,7 +30,9 @@ class Bot:
         chat_id = self.message.chat.id
         teleBot.send_chat_action(chat_id, "typing")
         response = chatBot.request(self.message)
-        teleBot.reply_to(self.message, response, parse_mode="Markdown")
+
+        if (self.active_mode == True):
+            teleBot.reply_to(self.message, response, parse_mode="Markdown")
 
     def handle_callback_query(self, callback_query):
         # Extract the necessary information from the callback_query
@@ -51,7 +53,7 @@ class Bot:
         # Handle commands
         @teleBot.message_handler(commands=["start"])
         def start_message(message):
-            teleBot.reply_to(message, "Здравствуйте букашки!")
+            teleBot.reply_to(message, "Здравствуйте братья!")
 
         @teleBot.message_handler(commands=["bot_mode"])
         def choosemode(message):
@@ -73,6 +75,15 @@ class Bot:
         def reset(message):
             chatBot.init_chat(self.message.chat.id, reset=True)
             teleBot.reply_to(message, f"Режим бота сброшен!")
+        
+        @teleBot.message_handler(commands=["active_mode"])
+        def active_mode(message):
+            if (self.active_mode == False):
+                self.active_mode = True
+                teleBot.reply_to(message, "Активный режим включен. Теперь буду отвечать на все сообщения.")
+            else:
+                self.active_mode = False
+                teleBot.reply_to(message, "Активный режим выключен. Теперь буду отвечать только когда отмечают.")
 
         # Handle the 'mode selection' action
         @teleBot.message_handler(
