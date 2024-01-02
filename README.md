@@ -8,6 +8,7 @@ This is a personal project, a chat-gpt telegram bot for groups to provide help a
 BOTFATHER_API_KEY - The Bot API Key from @botfather in Telegram
 OPENAI_API_BASE - Custom endpoint if you use an alternative (like NeuroGPT)
 OPENAI_API_KEY - Your OpenAI key from OpenAI or from alternatives like NeuroGPT
+GPT_MODEL - What GPT model to use (ex. gpt-3.5-turbo-16k-0613)
 
 # Production App Deployed from main at
 
