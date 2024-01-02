@@ -72,7 +72,7 @@ class ChatBot:
             self.chats[str(chatId)].append(mes_obj)
         self.dump_chats()
 
-    def request(self, message, model="gpt-3.5-turbo"):
+    def request(self, message, model="gpt-3.5"):
         chat_id = message.chat.id
 
         if str(chat_id) not in self.chats.keys():
