@@ -72,7 +72,7 @@ class ChatBot:
             self.chats[str(chatId)].append(mes_obj)
         self.dump_chats()
 
-    def request(self, message, model="gpt-3.5"):
+    def request(self, message):
         chat_id = message.chat.id
 
         if str(chat_id) not in self.chats.keys():
@@ -81,7 +81,7 @@ class ChatBot:
         self.update_context(message)
 
         response = openai.ChatCompletion.create(
-            model=model, messages=self.chats[str(chat_id)]
+            model=os.environ['GPT_MODEL'], messages=self.chats[str(chat_id)]
         )
 
         result = self.postprocess_response(response["choices"][0]["message"]["content"])
