@@ -3,6 +3,7 @@ import requests
 from flask import Flask, request
 import logging
 from bot import Bot
+from telebot import types
 from telebot import TeleBot
 from chat import ChatBot
 

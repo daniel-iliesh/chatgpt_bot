@@ -1,6 +1,4 @@
-from telebot import TeleBot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
-from telebot import types
 import os
 import traceback
 import dotenv
