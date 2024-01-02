@@ -13,7 +13,7 @@ chatBot = ChatBot(teleBot.get_me())
 
 class Bot:
     def __init__(self):
-        self.active_mode = False
+        pass
 
     def create_chat_mode_menu(self):
         chatBot.set_prompts_options()
@@ -31,8 +31,7 @@ class Bot:
         teleBot.send_chat_action(chat_id, "typing")
         response = chatBot.request(self.message)
 
-        if (self.active_mode == True):
-            teleBot.reply_to(self.message, response, parse_mode="Markdown")
+        teleBot.reply_to(self.message, response, parse_mode="Markdown")
 
     def handle_callback_query(self, callback_query):
         # Extract the necessary information from the callback_query
