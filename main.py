@@ -5,10 +5,11 @@ import logging
 from bot import Bot
 
 app = Flask(__name__)  # Create your Flask app instance
-bot = Bot()  # Pass the Flask app instance to your Bot class
+teleBot = TeleBot(os.environ["BOTFATHER_API_KEY"])
+bot = Bot(teleBot)  
+
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
-
 
 def check_webhook():
     response = requests.get(
@@ -29,7 +30,7 @@ def webhook_handler():
         message = payload.get("message")
         if message:
             chat_type = message["chat"]["type"]
-            if "@" + bot.get_me().username in message["text"] and chat_type in [
+            if "@" + teleBot.get_me().username in message["text"] and chat_type in [
                 "group",
                 "supergroup",
                 "private",
