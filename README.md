@@ -1,3 +1,8 @@
+<!--
+{
+  "visible": "true"
+}
+-->
 # chatgpt_bot
 ChatGPT Telegram Bot
 
