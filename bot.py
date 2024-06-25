@@ -2,14 +2,16 @@ from telebot import TeleBot
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from telebot import types
 import os
-import traceback
 import dotenv
+import logging
 from chat import ChatBot
-import datetime
 
 dotenv.load_dotenv(dotenv.find_dotenv())
 teleBot = TeleBot(os.environ["BOTFATHER_API_KEY"])
 chatBot = ChatBot(teleBot.get_me())
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 class Bot:
     def __init__(self):
@@ -22,15 +24,11 @@ class Bot:
         menu.add(*buttons)
         return menu
 
-    def handle_message(self, message_dict):
-        # Convert dictionary to Message object
-        self.message = types.Message.de_json(message_dict)
-
-        # Now you can use the Message object with teleBot
-        chat_id = self.message.chat.id
+    def handle_message(self, message):
+        chat_id = message.chat.id
         teleBot.send_chat_action(chat_id, "typing")
-        response = chatBot.request(self.message)
-        teleBot.reply_to(self.message, response, parse_mode="Markdown")
+        response = chatBot.request(message)
+        teleBot.reply_to(message, response, parse_mode="Markdown")
 
     def handle_callback_query(self, callback_query):
         # Extract the necessary information from the callback_query
@@ -46,7 +44,7 @@ class Bot:
         teleBot.reply_to(self.message, response, parse_mode="Markdown")
 
     def start(self):
-        print("Bot Started!")
+        logging.debug("Bot Started!")
 
         # Handle commands
         @teleBot.message_handler(commands=["start"])
@@ -63,7 +61,7 @@ class Bot:
 
         @teleBot.message_handler(commands=["clear_chat"])
         def clear_chat(message):
-            chatBot.clear_chat(self.message.chat.id)
+            chatBot.clear_chat(message.chat.id)
             teleBot.reply_to(
                 message,
                 f"Я забыл все о чем мы до этого говорили. Начнем с чистого листа.",
@@ -71,16 +69,16 @@ class Bot:
 
         @teleBot.message_handler(commands=["reset"])
         def reset(message):
-            chatBot.init_chat(self.message.chat.id, reset=True)
+            chatBot.init_chat(message.chat.id, reset=True)
             teleBot.reply_to(message, f"Режим бота сброшен!")
 
         # Handle the 'mode selection' action
         @teleBot.message_handler(
-            func=lambda message: message['text'] in chatBot.prompts_options.keys()
+            func=lambda message: message.text in chatBot.prompts_options.keys()
         )
         def handle_option_selected(message):
-            selected_option = message['text']
-            chatBot.set_bot_mode(selected_option, self.message.chat.id)
+            selected_option = message.text
+            chatBot.set_bot_mode(selected_option, message.chat.id)
             reply_markup = ReplyKeyboardRemove()
             teleBot.reply_to(
                 message,
@@ -89,7 +87,7 @@ class Bot:
             )
 
         @teleBot.message_handler(
-            func=lambda message: "@" + teleBot.get_me().username in message['text'],
+            func=lambda message: "@" + teleBot.get_me().username in message.text,
             chat_types=["group", "supergroup", "private"],
         )
         def sender(message):
@@ -105,9 +103,7 @@ class Bot:
         def listen_chat(message):
             chatBot.update_context(message)
 
-    def start_flask_app(self):
-        teleBot.remove_webhook()
-        teleBot.set_webhook(
-            url="https://chadgpt-bot-f2bf5dad4f23.herokuapp.com/"
-            + os.environ["BOTFATHER_API_KEY"]
-        )
+    def start_polling(self):
+        logging.debug("Removing webhook and starting polling...")
+        teleBot.remove_webhook()  # Ensure the webhook is removed
+        teleBot.polling(none_stop=True)  # Start polling

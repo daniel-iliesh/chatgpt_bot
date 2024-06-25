@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 import os
 import openai
+from openai import OpenAI
+
 import csv
 import dotenv
 import json
 
 dotenv.load_dotenv(dotenv.find_dotenv())
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
 # openai = OpenAI()
-openai.api_base = os.environ["OPENAI_API_BASE"]
-openai.api_key = os.environ["OPENAI_API_KEY"]
+# TODO: The 'openai.api_base' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(base_url=os.environ["OPENAI_API_BASE"])'
+# openai.api_base = os.environ["OPENAI_API_BASE"]
 
 
 class ChatBot:
@@ -80,11 +83,9 @@ class ChatBot:
 
         self.update_context(message)
 
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-16k-0613", messages=self.chats[str(chat_id)]
-        )
+        response = client.chat.completions.create(model="gpt-3.5-turbo", messages=self.chats[str(chat_id)])
 
-        result = self.postprocess_response(response["choices"][0]["message"]["content"])
+        result = self.postprocess_response(response.choices[0].message.content)
         self.update_context(result, chat_id)
         return result
 
