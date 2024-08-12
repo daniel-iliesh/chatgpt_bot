@@ -1,5 +1,3 @@
 python-dotenv
-pyTelegramBotAPI
-openai==0.28
-flask
-gunicorn
+python-telegram-bot
+openai
