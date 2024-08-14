@@ -3,3 +3,4 @@ venv/
 __pycache__/
 .DS_Store
 start_all.sh
+chats.json

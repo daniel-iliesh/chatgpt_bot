@@ -14,7 +14,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         await context.bot.send_chat_action(chat_id=update.message.chat_id, action="typing")
         response = chat_bot.request(update.message, context.bot)
         escaped_response = escape_markdown_v2(response)
-        await update.message.reply_text(escaped_response, parse_mode="MarkdownV2")
+        print("Escaped response", escaped_response)
+        await update.message.reply_markdown_v2(escaped_response)
     else:
         chat_bot.update_context(update.message, context.bot)
 
